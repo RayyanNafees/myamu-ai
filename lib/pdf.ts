@@ -1,4 +1,4 @@
-import pdfParse from "pdf-parse/index";
+import pdfParse from "pdf-parse";
 import { Buffer } from "node:buffer";
 export const parseRegistrationCard = (dataArr: string[], enroll?: string) => {
 	const subs = dataArr
