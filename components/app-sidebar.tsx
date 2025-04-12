@@ -53,7 +53,7 @@ const data = {
 			isActive: true,
 			items: [
 				{
-					title: "Daily Update",
+					title: "Daily Uploads",
 					url: "#",
 				},
 				{
@@ -90,7 +90,7 @@ const data = {
 			],
 		},
 		{
-			title: "Student",
+			title: "Content",
 			url: "#",
 			icon: BookOpen,
 			items: [

@@ -6,6 +6,7 @@ import {
   MoreHorizontal,
   Trash2,
   type LucideIcon,
+  PlusIcon
 } from "lucide-react"
 
 import {
@@ -62,11 +63,11 @@ export function NavProjects({
               >
                 <DropdownMenuItem>
                   <Folder className="text-muted-foreground" />
-                  <span>View Project</span>
+                  <span>Syllabus</span>
                 </DropdownMenuItem>
                 <DropdownMenuItem>
                   <Forward className="text-muted-foreground" />
-                  <span>Share Project</span>
+                  <span>AI chat</span>
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem>
@@ -79,8 +80,8 @@ export function NavProjects({
         ))}
         <SidebarMenuItem>
           <SidebarMenuButton className="text-sidebar-foreground/70">
-            <MoreHorizontal className="text-sidebar-foreground/70" />
-            <span>More</span>
+            <PlusIcon className="text-sidebar-foreground/70" />
+            <span>Add Subject</span>
           </SidebarMenuButton>
         </SidebarMenuItem>
       </SidebarMenu>
