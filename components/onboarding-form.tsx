@@ -11,30 +11,11 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Meteors } from "@/components/magicui/meteors";
 // import { loginUserAction } from "@/actions/login";
-// import { Loader2 } from "lucide-react";
-// import { loginUserAction } from "@/app/actions";
-import { cookies } from "next/headers";
-import { getUserFromEnroll } from "@/lib/pdf";
-import { redirect } from "next/navigation";
 
-export function LoginForm({
+export function OnboardingForm({
 	className,
 	...props
 }: React.ComponentProps<"div">) {
-
-
-	async function loginUserAction(formData: FormData) {
-		"use server";
-		const enroll = formData.get("enroll") as string;
-		console.log({ enroll });
-		const cookieStore = await cookies();
-		const b = cookieStore.set("enroll", "1");
-		const user = await getUserFromEnroll(enroll);
-		console.log(user);
-		cookieStore.set('user', JSON.stringify(user))
-		redirect(`/onboarding?enroll=${enroll}`);
-	}
-
 	return (
 		<div className={cn("flex flex-col gap-6", className)} {...props}>
 			{/* <div className="relative overflow-hidden h-[500px] w-full max-w-[350px]"> */}
@@ -48,7 +29,7 @@ export function LoginForm({
 					</CardDescription>
 				</CardHeader>
 				<CardContent>
-					<form action={loginUserAction}>
+					<form>
 						<div className="grid gap-6">
 							<div className="flex flex-col gap-4">
 								<Button variant="outline" className="w-full">
@@ -71,14 +52,8 @@ export function LoginForm({
 							</div>
 							<div className="grid gap-6">
 								<div className="grid gap-3">
-									<Label htmlFor="enroll">Enrollment Number</Label>
-									<Input
-										id="enroll"
-										type="text"
-										name="enroll"
-										placeholder="GP4519"
-										required
-									/>
+									<Label htmlFor="email">Enrollment Number</Label>
+									<Input id="email" type="text" placeholder="GP4519" required />
 								</div>
 								{/* <div className="grid gap-3">
                   <div className="flex items-center">
