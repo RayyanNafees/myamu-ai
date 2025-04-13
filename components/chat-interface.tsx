@@ -1,6 +1,7 @@
 "use client";
 
 import "ios-vibrator-pro-max";
+import nmd from 'nano-markdown'
 
 import type React from "react";
 import { useState, useRef, useEffect } from "react";
@@ -22,6 +23,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
 import { Input } from "./ui/input";
 import { Label } from "./ui/label";
+import { v4 as uuidv4 } from 'uuid';
 
 type ActiveButton = "none" | "add" | "deepSearch" | "think";
 type MessageType = "user" | "system";
@@ -80,6 +82,7 @@ export default function ChatInterface() {
 		start: number | null;
 		end: number | null;
 	}>({ start: null, end: null });
+	const [sessionId, setSessionId] = useState<string>(uuidv4());
 
 	// Constants for layout calculations to account for the padding values
 	const HEADER_HEIGHT = 48; // 12px height + padding
@@ -303,8 +306,6 @@ export default function ChatInterface() {
 	};
 
 	const simulateAIResponse = async (userMessage: string) => {
-		const response = getAIResponse(userMessage);
-
 		// Create a new message with empty content
 		const messageId = Date.now().toString();
 		setStreamingMessageId(messageId);
@@ -324,28 +325,69 @@ export default function ChatInterface() {
 			navigator.vibrate(50);
 		}, 200); // 200ms delay to make it distinct from the first vibration
 
-		// Stream the text
-		await simulateTextStreaming(response);
+		try {
+			// Call the API endpoint
+			const response = await fetch('/aichat', {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
+				},
+				body: JSON.stringify({
+					message: userMessage,
+					sessionId,
+				}),
+			});
 
-		// Update with complete message
-		setMessages((prev) =>
-			prev.map((msg) =>
-				msg.id === messageId
-					? { ...msg, content: response, completed: true }
-					: msg,
-			),
-		);
+			if (!response.ok) {
+				throw new Error('Failed to get response from AI');
+			}
 
-		// Add to completed messages set to prevent re-animation
-		setCompletedMessages((prev) => new Set(prev).add(messageId));
+			const data = await response.json();
+			
+			// Update session ID if it changed
+			if (data.sessionId && data.sessionId !== sessionId) {
+				setSessionId(data.sessionId);
+			}
 
-		// Add vibration when streaming ends
-		navigator.vibrate(50);
+			// Stream the text
+			await simulateTextStreaming(nmd(data.response));
 
-		// Reset streaming state
-		setStreamingWords([]);
-		setStreamingMessageId(null);
-		setIsStreaming(false);
+			// Update with complete message
+			setMessages((prev) =>
+				prev.map((msg) =>
+					msg.id === messageId
+						? { ...msg, content: data.response, completed: true }
+						: msg,
+				),
+			);
+
+			// Add to completed messages set to prevent re-animation
+			setCompletedMessages((prev) => new Set(prev).add(messageId));
+
+			// Add vibration when streaming ends
+			navigator.vibrate(50);
+
+			// Reset streaming state
+			setStreamingWords([]);
+			setStreamingMessageId(null);
+			setIsStreaming(false);
+		} catch (error) {
+			console.error('Error getting AI response:', error);
+			
+			// Update with error message
+			setMessages((prev) =>
+				prev.map((msg) =>
+					msg.id === messageId
+						? { ...msg, content: "Sorry, I encountered an error. Please try again.", completed: true }
+						: msg,
+				),
+			);
+			
+			// Reset streaming state
+			setStreamingWords([]);
+			setStreamingMessageId(null);
+			setIsStreaming(false);
+		}
 	};
 
 	const handleInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {

@@ -31,9 +31,20 @@ const tools = [
 				r.text(),
 			),
 		{
-			name: "Student Info",
+			name: "Student Info from enrollment",
 			description:
 				"Useful knowing the student's information from his enrollment number. (enrollment number is of format 'GP4519')",
+		},
+	),
+	tool(
+		() =>
+			fetch('https://opensheet.elk.sh/1ogjvUBuTRre5aZYh-GlN9p-KvVt9DUsBCUuUkepXFxQ/Complete').then((r) =>
+				r.text(),
+			),
+		{
+			name: "Student Info ",
+			description:
+				"Useful knowing the student's information with name, faculty, enrollment, hall, class, serial, branch, course, college etc",
 		},
 	),
 	tool(
@@ -47,6 +58,15 @@ const tools = [
 				"Useful for when you need to know information about a topic.",
 		},
 	),
+	tool(
+		(query: string) =>
+			fetch(`https://scheme.deno.dev?enroll=${query}`),
+		{
+			name: "Scheme/Datesheet of exam from enrollment number",
+			description:
+				"Useful for knowing the scheme/datesheet of examinations, its dates and times etc. from the provided enrollment numebr , eg 'GP4519'",
+		},
+	),
 
 	tool(() => fetch("/departments").then((r) => r.json()), {
 		name: "ZHCET Departments",
@@ -58,15 +78,13 @@ const tools = [
 		description:
 			"Tells about the names of all the departments at Zakir Hussain College of Engg & Tech at AMU",
 	}),
-	tool((query) => fetch(`/faculties/${query}`).then((r) => r.json()), {
+	tool((query) => fetch(`/professor?slug=${query}`).then((r) => r.json()), {
 		name: "ZHCET Professor/Faculty Information",
 		description:
 			"Tells about the information of the professor based on his id/username/slug at Zakir Hussain College of Engg & Tech at AMU",
 	}),
 ];
-const _prompt = await hub.pull<ChatPromptTemplate>(
-	"hwchase17/structured-chat-agent",
-);
+const _prompt = await hub.pull("hwchase17/structured-chat-agent");
 const llm = new ChatGoogleGenerativeAI({
 	model: "gemini-2.0-flash",
 	maxOutputTokens: 2048,
