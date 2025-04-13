@@ -56,6 +56,7 @@ export default function MyForm({
 	userId,
 }: { subjects: SubjectInput; userId: string }) {
 	const [files, setFiles] = useState<File[] | null>(null);
+  const [fileIds, setFileIds] = useState<string[]>([]);
 	const [uploadedURLs, setUploadedURLs] = useState<string[]>([]);
 
 	const dropZoneConfig = {
@@ -71,9 +72,9 @@ export default function MyForm({
 	});
 
 	async function onSubmit(values: z.infer<typeof formSchema>) {
-		const signURL = async (fileName: string) =>
-			fetch(`/api/sign?filename=${fileName}`).then((r) => r.text());
-		const uploadFile = async (signedURL: string, file: File) =>
+		const signURL = async (fileName: string, id:string) =>
+			fetch(`/sign?filename=${id}-${fileName}`).then((r) => r.text());
+		const uploadFile = async (signedURL: string, file: File, id: string) =>
 			fetch(signedURL, {
 				method: "PUT",
 				body: file,
@@ -81,7 +82,7 @@ export default function MyForm({
 				//   "Content-Type": "application/octet-stream",
 				// },
 			})
-				.then(() => `${process.env.NEXT_PUBLIC_R2_PUBLIC_URL}/${file.name}`)
+				.then(() => `${process.env.NEXT_PUBLIC_R2_PUBLIC_URL}/${id}-${file.name}`)
 				.catch(console.error);
 
 		try {
@@ -99,12 +100,12 @@ export default function MyForm({
 			);
 			if (!files) return;
 
-			const uploadFiles = Promise.all(files?.map((i) => signURL(i.name)) ?? [])
+			const uploadFiles = Promise.all(files?.map((i, n) => signURL(i.name, fileIds[n])) ?? [])
 				.then((fileURLS) =>
-					Promise.all(fileURLS.map((i, n) => uploadFile(i, files[n]))),
+					Promise.all(fileURLS.map((i, n) => uploadFile(i, files[n], fileIds[n]))),
 				)
 				.then((urls) => {
-					fetch("/api/add-uploads", {
+					fetch("/add-uploads", {
 						method: "POST",
 						headers: {
 							"Content-Type": "application/json",
@@ -112,6 +113,7 @@ export default function MyForm({
 						body: JSON.stringify(
 							urls.map((i, n) => ({
 								name: files[n].name,
+                fileID: fileIds[n],
 								url: i,
 								type: files[n].type,
 								description: values.date,
@@ -242,7 +244,11 @@ export default function MyForm({
 							<FormControl>
 								<FileUploader
 									value={files}
-									onValueChange={setFiles}
+									onValueChange={(files) => {
+                    if (!files) return
+                    setFiles(files)
+                    setFileIds(files?.map(()=>crypto.randomUUID()))
+                  }}
 									dropzoneOptions={dropZoneConfig}
 									className="relative bg-background rounded-lg p-2"
 								>

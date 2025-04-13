@@ -11,6 +11,6 @@ export const POST = async (req: Request) => {
 			date: new Date(i.date),
 		})),
 	);
-  
+
 	return Response.json(docs);
 };
