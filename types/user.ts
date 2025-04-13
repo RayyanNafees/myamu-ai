@@ -18,3 +18,12 @@ export type UserType = {
 		iconName: string;
 	}>;
 };
+
+export type Document = {
+	id: string;
+	name: string;
+	url: string;
+	type: string;
+	description: string;
+	date?: string | Date|undefined;
+};

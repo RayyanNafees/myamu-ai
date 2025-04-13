@@ -299,7 +299,7 @@ export default function UploaderForm({
 						{i}
 					</Link>
 				))} */}
-			<Toaster richColors />
+			{/* <Toaster richColors /> */}
 		</Form>
 	);
 }

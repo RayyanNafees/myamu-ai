@@ -8,7 +8,7 @@ import {
 	MessageSquare,
 	MessageCircleQuestion,
 } from "lucide-react";
-import type { PropsWithChildren } from "react";
+import type { PropsWithChildren, ReactNode } from "react";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import {
@@ -22,13 +22,25 @@ import {
 } from "@/components/ui/dropdown-menu";
 
 import {
+	Dialog,
+	DialogContent,
+	DialogDescription,
+	DialogFooter,
+	DialogHeader,
+	DialogTitle,
+	DialogTrigger,
+} from "@/components/ui/dialog";
+
+import {
 	Tooltip,
 	TooltipContent,
 	TooltipProvider,
 	TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { AudioPlayer } from "./audio-player";
+import type { Document } from "@/types/user";
 
-export const DropDown = () => (
+export const DropDown = ({ doc }: { doc: string }) => (
 	<DropdownMenu>
 		<DropdownMenuTrigger asChild>
 			<Button variant="ghost" className="h-8 w-8 p-0">
@@ -48,6 +60,27 @@ export const DropDown = () => (
 	</DropdownMenu>
 );
 
+const TTSButton = ({ doc }: { doc: Document }) => (
+	<TooltipProvider>
+		<Tooltip>
+			<TooltipTrigger asChild>
+				<Popup
+					title="AI Text to Speech"
+					description="Listen to the text inside the document"
+					dialogComponent={<AudioPlayer doc={doc} />}
+				>
+					<Button variant="outline" size="icon">
+						<Headphones />
+					</Button>
+				</Popup>
+			</TooltipTrigger>
+			<TooltipContent>
+				<p>Listen</p>
+			</TooltipContent>
+		</Tooltip>
+	</TooltipProvider>
+);
+
 const ActionButton = ({
 	name,
 	children,
@@ -55,15 +88,48 @@ const ActionButton = ({
 	<TooltipProvider>
 		<Tooltip>
 			<TooltipTrigger asChild>
-				<Button variant="outline" size="icon">
-					{children}
-				</Button>
+				<Popup
+					title="AI Text to Speech"
+					description="Listen to the text inside the document"
+					// dialogComponent={<AudioPlayer doc={docmas }/>}
+				>
+					<Button variant="outline" size="icon">
+						{children}
+					</Button>
+				</Popup>
 			</TooltipTrigger>
 			<TooltipContent>
 				<p>{name}</p>
 			</TooltipContent>
 		</Tooltip>
 	</TooltipProvider>
+);
+
+export const Popup = ({
+	children,
+	dialogComponent,
+	title,
+	description,
+	dialogFooter,
+}: PropsWithChildren<
+	Partial<{
+		dialogComponent: ReactNode;
+		title: string;
+		description: string;
+		dialogFooter: ReactNode;
+	}>
+>) => (
+	<Dialog>
+		<DialogTrigger asChild>{children}</DialogTrigger>
+		<DialogContent className="sm:max-w-[425px]">
+			<DialogHeader>
+				<DialogTitle>{title}</DialogTitle>
+				<DialogDescription>{description}</DialogDescription>
+			</DialogHeader>
+			{dialogComponent}
+			<DialogFooter>{dialogFooter}</DialogFooter>
+		</DialogContent>
+	</Dialog>
 );
 
 export function DocsList({
@@ -75,6 +141,7 @@ export function DocsList({
 			url: string;
 			type: string;
 			description: string;
+			id: string;
 			// date: string;
 		}[];
 	};
@@ -100,9 +167,7 @@ export function DocsList({
 								</div>
 
 								<div className="grid grid-cols-3 gap-1 col-span-3">
-									<ActionButton name="Listen">
-										<Headphones />
-									</ActionButton>
+									<TTSButton doc={doc} />
 									<ActionButton name="AI Chat">
 										<MessageSquare />
 									</ActionButton>
@@ -112,7 +177,7 @@ export function DocsList({
 								</div>
 								<div className="col-span-1">
 									{/* <Button variant="outline" size="icon"> */}
-									<DropDown />
+									{/* <DropDown /> */}
 									{/* </Button> */}
 								</div>
 							</div>

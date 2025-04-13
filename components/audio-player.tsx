@@ -14,18 +14,22 @@ import { Avatar, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
+import type { Document } from "@/types/user";
 
 const playerData = {
 	initialSong: {
 		name: "Song name",
 		author: "Author Title",
 		cover: "https://i.scdn.co/image/ab67616d0000b2731d1cc2e40d533d7bcebf5dae",
+		audio:
+			"/audio?text=I love building and shipping new features for our users!",
 	},
 	sidhuSong: {
 		name: "295",
 		author: "Sidhu Moosewala",
 		cover: "https://i.scdn.co/image/ab67616d0000b2731d1cc2e40d533d7bcebf5dae",
-		audio: "/audio?text=I love building and shipping new features for our users!",
+		audio:''
+			// "/audio?text=I love building and shipping new features for our users!",
 	},
 };
 
@@ -36,7 +40,7 @@ const secs2Time = (secs: number | undefined, defaultValue: string) => {
 	return `${mins}:${secsLeft < 10 ? "0" : ""}${Math.ceil(secsLeft)}`;
 };
 
-export function MusicPlayer() {
+export function AudioPlayer({ doc }: { doc: Document }) {
 	const [isPlaying, setIsPlaying] = useState(false);
 	const [progress, setProgress] = useState(0);
 	const [currentSong, setCurrentSong] = useState(playerData.initialSong);
@@ -46,11 +50,27 @@ export function MusicPlayer() {
 
 	// Improved typing effect
 	useEffect(() => {
-		setCurrentSong(playerData.sidhuSong);
-		loadAudio();
-		setIsPlaying(true);
-		animateProgress();
-	}, []);
+		fetch('/doc-tts', {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json',
+			},
+			body: JSON.stringify(doc),
+		})
+			.then((r) => r.json())
+			.then(({ base64, docName, docCourse }) => {
+				setCurrentSong({
+					name: doc.name,
+					author: doc.description,
+					cover:
+						"https://i.scdn.co/image/ab67616d0000b2731d1cc2e40d533d7bcebf5dae",
+					audio: `data:audio/wav;base64,${base64}`,
+				});
+				loadAudio();
+				setIsPlaying(true);
+				animateProgress();
+			});
+	}, [doc]);
 
 	const loadAudio = () => {
 		if (audioRef.current) {
@@ -195,6 +215,7 @@ export function MusicPlayer() {
 				onTimeUpdate={handleTimeUpdate}
 				onEnded={() => setIsPlaying(false)}
 				crossOrigin="anonymous"
+        src={currentSong.audio}
 			>
 				<track kind="captions" />
 			</audio>

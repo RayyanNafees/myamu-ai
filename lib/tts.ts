@@ -16,7 +16,7 @@ export async function tts(text = defaultText) {
 	const response = await groq.audio.speech.create({
 		model: model,
 		voice: voice,
-		input: text.slice(0, 10_000),
+		input: text.slice(0,1_000),
 		response_format: responseFormat,
 	});
 

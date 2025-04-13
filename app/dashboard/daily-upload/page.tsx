@@ -1,6 +1,6 @@
 import { getUser } from "@/lib/user";
 import Uploader from "@/components/forms/uploader";
-import type { UserType } from "@/types/user";
+import type { Document, UserType } from "@/types/user";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { UploadSheet } from "./upload-sheet";
@@ -14,14 +14,7 @@ import {
 	sortGroupedDocumentsByDate,
 } from "@/lib/document-utils";
 
-type Document = {
-	id: string;
-	name: string;
-	url: string;
-	type: string;
-	description: string;
-	date: string | Date;
-};
+
 
 export default async function Page() {
 	const user = (await getUser()) as UserType & { id: string };
@@ -66,9 +59,7 @@ export default async function Page() {
 					userId={user.id}
 				/>
 			</UploadSheet>
-			<DocsList
-			groupedDocs={sortedGroupedDocs}
-			/>
+			<DocsList groupedDocs={sortedGroupedDocs} />
 		</div>
 	);
 }

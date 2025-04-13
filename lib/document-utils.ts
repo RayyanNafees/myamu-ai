@@ -1,24 +1,9 @@
-type Document = {
-	// id: string;
-	name: string;
-	url: string;
-	type: string;
-	description: string;
-	date: string | Date;
-	// userId: string;
-};
+import type { Document } from "@/types/user";
 
-const filterKeys = <K extends string, V>(
-	obj: Record<K, V>,
-	excludeKeys: string[] = [],
-) =>
-	Object.fromEntries(
-		Object.entries(obj).filter(([k, _]) => !excludeKeys.includes(k)),
-	);
 export function groupDocumentsByDate(documents: Document[], locale = "en-US") {
 	return documents.reduce(
 		(acc, doc) => {
-			const date = new Date(doc.date);
+			const date = new Date(doc.date ?? Date.now());
 			const localeDate = date.toLocaleDateString(locale);
 
 			if (!acc[localeDate]) {
@@ -30,7 +15,8 @@ export function groupDocumentsByDate(documents: Document[], locale = "en-US") {
 				url: doc.url,
 				type: doc.type,
 				description: doc.description,
-				date: doc.date.toLocaleString(),
+				date: new Date(doc.date ?? Date.now()).toLocaleString(),
+				id: doc.id,
 			});
 			return acc;
 		},
