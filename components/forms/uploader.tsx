@@ -1,11 +1,23 @@
-"use client";
-import { useState } from "react";
-import { toast } from "sonner";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import * as z from "zod";
-import { cn } from "@/lib/utils";
-import { Button } from "@/components/ui/button";
+"use client"
+import {
+  useState
+} from "react"
+import {
+  toast, Toaster
+} from "sonner"
+import {
+  useForm
+} from "react-hook-form"
+import {
+  zodResolver
+} from "@hookform/resolvers/zod"
+import * as z from "zod"
+import {
+  cn
+} from "@/lib/utils"
+import {
+  Button
+} from "@/components/ui/button"
 import {
   Form,
   FormControl,
@@ -14,34 +26,57 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/components/ui/form";
-import { format } from "date-fns";
+} from "@/components/ui/form"
+import {
+  format
+} from "date-fns"
 import {
   Popover,
   PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
-import { Calendar } from "@/components/ui/calendar";
-import { Calendar as CalendarIcon } from "lucide-react";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { CloudUpload, Paperclip } from "lucide-react";
+  PopoverTrigger
+} from "@/components/ui/popover"
+import {
+  Calendar
+} from "@/components/ui/calendar"
+import {
+  Calendar as CalendarIcon
+} from "lucide-react"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue
+} from "@/components/ui/select"
+import {
+  Textarea
+} from "@/components/ui/textarea"
+import {
+  CloudUpload,
+  Paperclip
+} from "lucide-react"
 import {
   FileInput,
   FileUploader,
   FileUploaderContent,
-  FileUploaderItem,
-} from "@/components/ui/file-upload";
+  FileUploaderItem
+} from "@/components/ui/file-upload"
+import type { UserType } from "@/types/user"
+import Link from "next/link"
 
 const formSchema = z.object({
-  lecture_date: z.coerce.date(),
-  title: z.string().min(1),
-  subtitle: z.string().optional(),
-  name_9915997915: z.string(),
+  date: z.coerce.date(),
+  course: z.string(),
+  description: z.string().optional(),
+  files: z.string().optional()
 });
 
-export default function MyForm() {
+type SubjectInput = Array<Pick<UserType["subjects"][0], "code" | "subject">>
+
+export default function MyForm({ subjects }: { subjects: SubjectInput }) {
+
   const [files, setFiles] = useState<File[] | null>(null);
+  const [uploadedURLs, setUploadedURLs] = useState<string[]>([]);
 
   const dropZoneConfig = {
     maxFiles: 5,
@@ -51,18 +86,50 @@ export default function MyForm() {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      lecture_date: new Date(),
+      "date": new Date()
     },
-  });
+  })
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
+  async function onSubmit(values: z.infer<typeof formSchema>) {
+
+    const signURL = async (fileName: string) => fetch(`/api/sign?filename=${fileName}`).then(r => r.text())
+    const uploadFile = async (signedURL: string, file: File) => fetch(signedURL, {
+      method: "PUT",
+      body: file
+      // headers: {
+      //   "Content-Type": "application/octet-stream",
+      // },
+    }).then(() =>
+      `${process.env.NEXT_PUBLIC_R2_PUBLIC_URL}/${file.name}`
+    )
+      .catch(console.error)
+
     try {
       console.log(values);
       toast(
         <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
-          <code className="text-white">{JSON.stringify(values, null, 2)}</code>
-        </pre>,
+          <code className="text-white">{JSON.stringify({ ...values, files: files?.map(i => i.name) }, null, 2)}</code>
+        </pre>
       );
+      if (!files) return
+
+      const uploadFiles = Promise.all(files?.map(i => signURL(i.name)) ?? [])
+        .then(fileURLS => Promise.all(fileURLS.map((i, n) => uploadFile(i, files[n]))))
+
+
+      toast.promise(uploadFiles as Promise<string[]>, {
+        loading: `uploading ${files?.length} files...`,
+        success: (urls: string[]) => {
+          setUploadedURLs(urls)
+          return `${urls.length} Files Uploaded`
+        },
+        error: 'Error',
+      });
+
+
+
+
+
     } catch (error) {
       console.error("Form submission error", error);
       toast.error("Failed to submit the form. Please try again.");
@@ -71,16 +138,14 @@ export default function MyForm() {
 
   return (
     <Form {...form}>
-      <form
-        onSubmit={form.handleSubmit(onSubmit)}
-        className="space-y-8 max-w-3xl mx-auto py-10"
-      >
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8 max-w-3xl mx-auto py-10">
+
         <FormField
           control={form.control}
-          name="lecture_date"
+          name="date"
           render={({ field }) => (
             <FormItem className="flex flex-col">
-              <FormLabel>Upload Date</FormLabel>
+              <FormLabel>Date of Upload</FormLabel>
               <Popover>
                 <PopoverTrigger asChild>
                   <FormControl>
@@ -88,7 +153,7 @@ export default function MyForm() {
                       variant={"outline"}
                       className={cn(
                         "w-[240px] pl-3 text-left font-normal",
-                        !field.value && "text-muted-foreground",
+                        !field.value && "text-muted-foreground"
                       )}
                     >
                       {field.value ? (
@@ -109,7 +174,7 @@ export default function MyForm() {
                   />
                 </PopoverContent>
               </Popover>
-              <FormDescription>The date of the lecture taught</FormDescription>
+              <FormDescription>The date to upload the docs of</FormDescription>
               <FormMessage />
             </FormItem>
           )}
@@ -117,18 +182,26 @@ export default function MyForm() {
 
         <FormField
           control={form.control}
-          name="title"
+          name="course"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Title</FormLabel>
-              <FormControl>
-                <Input
-                  placeholder="Thermodynamic Radiation"
-                  type=""
-                  {...field}
-                />
-              </FormControl>
-              <FormDescription>The title of the lecture</FormDescription>
+              <FormLabel>Course name</FormLabel>
+              <Select onValueChange={field.onChange} defaultValue={field.value}>
+                <FormControl>
+                  <SelectTrigger>
+                    <SelectValue placeholder="eg, Applied Mathematics" />
+                  </SelectTrigger>
+                </FormControl>
+                <SelectContent>
+                  {subjects?.map(({ subject, code }) => (
+                    <SelectItem key={code} value={code}>
+                      {subject}
+                    </SelectItem>
+                  ))}
+
+                </SelectContent>
+              </Select>
+              <FormDescription>The course name the documents are of </FormDescription>
               <FormMessage />
             </FormItem>
           )}
@@ -136,16 +209,18 @@ export default function MyForm() {
 
         <FormField
           control={form.control}
-          name="subtitle"
+          name="description"
           render={({ field }) => (
             <FormItem>
               <FormLabel>Description</FormLabel>
               <FormControl>
-                <Textarea placeholder="" className="resize-none" {...field} />
+                <Textarea
+                  placeholder="Other details: eg, Talib sir's notes, Excercise 2-3, Topic: Eyelipse"
+                  className="resize-none"
+                  {...field}
+                />
               </FormControl>
-              <FormDescription>
-                Add meta data or relevant info to the content
-              </FormDescription>
+              <FormDescription>Add other details like Topic name etc</FormDescription>
               <FormMessage />
             </FormItem>
           )}
@@ -153,10 +228,10 @@ export default function MyForm() {
 
         <FormField
           control={form.control}
-          name="name_9915997915"
+          name="files"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Notes</FormLabel>
+              <FormLabel>Upload Documents</FormLabel>
               <FormControl>
                 <FileUploader
                   value={files}
@@ -169,7 +244,7 @@ export default function MyForm() {
                     className="outline-dashed outline-1 outline-slate-500"
                   >
                     <div className="flex items-center justify-center flex-col p-8 w-full ">
-                      <CloudUpload className="text-gray-500 w-10 h-10" />
+                      <CloudUpload className='text-gray-500 w-10 h-10' />
                       <p className="mb-1 text-sm text-gray-500 dark:text-gray-400">
                         <span className="font-semibold">Click to upload</span>
                         &nbsp; or drag and drop
@@ -183,7 +258,7 @@ export default function MyForm() {
                     {files &&
                       files.length > 0 &&
                       files.map((file, i) => (
-                        <FileUploaderItem key={crypto.randomUUID() + file.name} index={i}>
+                        <FileUploaderItem key={file.name} index={i}>
                           <Paperclip className="h-4 w-4 stroke-current" />
                           <span>{file.name}</span>
                         </FileUploaderItem>
@@ -191,13 +266,20 @@ export default function MyForm() {
                   </FileUploaderContent>
                 </FileUploader>
               </FormControl>
-              <FormDescription>Select a file to upload.</FormDescription>
+              <FormDescription>Select the Files / Audios to upload</FormDescription>
               <FormMessage />
             </FormItem>
           )}
         />
         <Button type="submit">Submit</Button>
       </form>
+
+      {
+        uploadedURLs.length > 0 &&
+        uploadedURLs.map(i => <Link key={i} href={i} target="_blank">{i}</Link>)
+      }
+      <Toaster richColors/>
     </Form>
-  );
+  )
 }
+
