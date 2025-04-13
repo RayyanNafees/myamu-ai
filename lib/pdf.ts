@@ -42,6 +42,8 @@ export const parseRegistrationCard = (dataArr: string[], enroll?: string) => {
 	};
 };
 
+export const fetchUserFromEnroll = async (enroll:string)=>fetch(`https://scheme.deno.dev/api/student/${enroll}`).then(r=>r.json())
+
 export const getUserFromEnroll = async (enroll: string) => {
 	if (!/[A-z]{2}\d{4}/.test(enroll))
 		throw new Error("Invalid enrollment number");
@@ -59,6 +61,7 @@ export const getUserFromEnroll = async (enroll: string) => {
 			}),
 		},
 	).then((r) => r.arrayBuffer());
+	console.log({file})
 	const file2 = Buffer.from(file);
 	const data = await pdfParse(file2);
 	const dataArr = data.text.split("\n");

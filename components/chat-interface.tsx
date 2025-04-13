@@ -500,7 +500,7 @@ export default function ChatInterface() {
             <span className="sr-only">Menu</span>
           </Button>
 
-          <h1 className="text-base font-medium text-gray-800">v0 Chat</h1>
+          <h1 className="text-base font-medium text-gray-800">My AMU Chat</h1>
 
           <Button type="button" variant="ghost" size="icon" className="rounded-full h-8 w-8">
             <PenSquare className="h-5 w-5 text-gray-700" />

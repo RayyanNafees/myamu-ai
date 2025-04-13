@@ -10,6 +10,17 @@ const UserSchema = new mongoose.Schema({
 	faculty: String,
 	enrollment: String,
 	hall: String,
+	subjects: [
+		{
+			serial: String,
+			category: String,
+			code: String,
+			subject: String,
+			mode: String,
+			credits: Number,
+			iconName:String,
+		},
+	],
 });
 
 export const User = mongoose.models.User || mongoose.model("User", UserSchema);

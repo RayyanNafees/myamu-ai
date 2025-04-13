@@ -1,0 +1,27 @@
+
+
+ZAKIR HUSAIN COLLEGE OF ENGINEERING & TECHNOLOGY
+Registration Card, Even Semester, 2024-25
+B.Tech: Computer Engineering
+Faculty Number: 23COBEA128Enrolment Number: GP4124Hall: SU
+Class & S.No: A2CO-6
+Name: ZUHAIR ARIF
+S.No.Categ.Course No.Course TitleModeCredits
+1BSAMS2622Numerical Analysis, Transforms and Probabilitya3.0
+2BSAMS2632Discrete Structuresa4.0
+3DCCOC2082Computer Architecturea4.0
+4DCCOC2142Design & Analysis of Algorithma4.0
+5DCCOC2922Digital  Design & Simulation Laba2.0
+6PCCOC2942Data Structure Laba2.0
+7ESAEEA1112Principles of Electrical Engineeringc3.0
+8ESAELA2412Fundamentals of Digital Signal Processinga4.0
+9ESAELA2902Electronics Laboratorya2.0
+10ESAMEA1112Thermal Sciencesb4.0
+TOTAL CREDITS: 32.0
+Modes of Registration:
+Mode "a": Fulfil class attendance requirement and appear in all the components of evaluation.
+Mode "b": Appear in all the components of evaluation. Class attendance not required.
+Mode "c": Appear only in End Semester Examination. Sessional Marks of previous registration will be considered.
+Last date of dropping a course from registration: February 15, 2025
+Seal and Signature of Chairperson
+Space for applying for any change in registration (To be signed by the Departmental Coordinator)

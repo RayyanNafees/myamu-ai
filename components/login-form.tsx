@@ -10,12 +10,16 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Meteors } from "@/components/magicui/meteors";
+import { User } from "@/models/User.model";
 // import { loginUserAction } from "@/actions/login";
 // import { Loader2 } from "lucide-react";
 // import { loginUserAction } from "@/app/actions";
 import { cookies } from "next/headers";
-import { getUserFromEnroll } from "@/lib/pdf";
+import { fetchUserFromEnroll, getUserFromEnroll } from "@/lib/pdf";
 import { redirect } from "next/navigation";
+import type { UserType } from "@/types/user";
+import { getCourseIcons } from "@/lib/gemini";
+import iconNames from '@/data/iconNames.json'
 
 export function LoginForm({
 	className,
@@ -28,19 +32,33 @@ export function LoginForm({
 		const enroll = formData.get("enroll") as string;
 		console.log({ enroll });
 		const cookieStore = await cookies();
-		const b = cookieStore.set("enroll", "1");
-		const user = await getUserFromEnroll(enroll);
-		console.log(user);
-		cookieStore.set('user', JSON.stringify(user))
-		redirect(`/onboarding?enroll=${enroll}`);
+		const b = cookieStore.set("enroll", enroll);
+
+		const loggedUser = await User.findOne({ enrollment: enroll })
+		if (loggedUser) {
+			redirect('/dashboard')
+		}
+
+		const user = await fetchUserFromEnroll(enroll) as UserType;
+		const subjectNames = user.subjects.map(s => s.subject)
+		if (subjectNames.length) {
+			const subjectIcons = await getCourseIcons(subjectNames, iconNames)
+			console.log({subjectNames, subjectIcons})
+			const iconnedUser = { ...user, subjects: user.subjects.map(s => ({ ...s, iconName: subjectIcons[s.subject] })) }
+			const currentUser = await new User(iconnedUser)
+			await currentUser.save()
+			console.log({ userId: currentUser._id })
+			cookieStore.set('userId', currentUser._id)
+			redirect('/dashboard');
+		}
 	}
 
 	return (
 		<div className={cn("flex flex-col gap-6", className)} {...props}>
-			{/* <div className="relative overflow-hidden h-[500px] w-full max-w-[350px]"> */}
-			<Meteors />
-			{/* </div> */}
-			<Card className="z-10">
+
+			<Meteors className="-z-[1000]" />
+
+			<Card className="z-50">
 				<CardHeader className="text-center">
 					<CardTitle className="text-xl">Welcome back</CardTitle>
 					<CardDescription>

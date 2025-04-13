@@ -9,8 +9,10 @@ import {
 	Frame,
 	GalleryVerticalEnd,
 	Map as MapIcon,
+	Palmtree,
 	PieChart,
 	Settings2,
+	ShieldCheck,
 	SquareTerminal,
 } from "lucide-react";
 
@@ -25,26 +27,12 @@ import {
 	SidebarHeader,
 	SidebarRail,
 } from "@/components/ui/sidebar";
+import { RandomIcon } from "./random-icon";
+import type { UserType } from "@/types/user";
 
 // This is sample data.
 const data = {
-	user: {
-		name: "Rayyan Nafees",
-		email: "nafees.rayyan@gmail.com",
-		avatar: "/avatars/shadcn.jpg",
-	},
-	teams: [
-		{
-			name: "AMU",
-			logo: GalleryVerticalEnd,
-			plan: "Mechanical Engg",
-		},
-		{
-			name: "IIT Roorkee",
-			logo: AudioWaveform,
-			plan: "Data Science",
-		},
-	],
+
 	navMain: [
 		{
 			title: "Data",
@@ -108,39 +96,44 @@ const data = {
 				},
 			],
 		},
-		
+
 	],
-	projects: [
-		{
-			name: "Applied Mathematics",
-			url: "#",
-			icon: Frame,
-		},
-		{
-			name: "Sales & Marketing",
-			url: "#",
-			icon: PieChart,
-		},
-		{
-			name: "Travel",
-			url: "#",
-			icon: MapIcon,
-		},
-	],
+
 };
 
-export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+// export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+export function AppSidebar({ user }: { user: UserType }) {
+	const profile = {
+		name: user.name,
+		email: user.faculty,
+		avatar: 'https://picsum.photos/100/100',
+	}
+
+	const projects = user.subjects.map(s => ({ name: s.subject, url: `/dashboard/daily-upload?subject=${s.subject}`, icon: s.iconName }))
+
+	const teams = [
+		{
+			name: user.college,
+			logo: Palmtree,
+			plan: user.branch,
+		},
+		{
+			name: "IIT Roorkee",
+			logo: ShieldCheck,
+			plan: "Data Science & AI",
+		},
+	]
 	return (
-		<Sidebar collapsible="icon" {...props}>
+		<Sidebar collapsible="icon" >
 			<SidebarHeader>
-				<TeamSwitcher teams={data.teams} />
+				<TeamSwitcher teams={teams} />
 			</SidebarHeader>
 			<SidebarContent>
 				<NavMain items={data.navMain} />
-				<NavProjects projects={data.projects} />
+				<NavProjects projects={projects} />
 			</SidebarContent>
 			<SidebarFooter>
-				<NavUser user={data.user} />
+				<NavUser user={profile} />
 			</SidebarFooter>
 			<SidebarRail />
 		</Sidebar>
