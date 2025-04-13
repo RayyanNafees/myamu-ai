@@ -9,6 +9,7 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Meteors } from "@/components/magicui/meteors";
 import { User } from "@/models/User.model";
 // import { loginUserAction } from "@/actions/login";
 // import { Loader2 } from "lucide-react";
@@ -55,7 +56,7 @@ export function LoginForm({
 	return (
 		<div className={cn("flex flex-col gap-6", className)} {...props}>
 
-			{/* <Meteors className="-z-[1000]" /> */}
+			<Meteors className="-z-[1000]" />
 
 			<Card className="z-50">
 				<CardHeader className="text-center">

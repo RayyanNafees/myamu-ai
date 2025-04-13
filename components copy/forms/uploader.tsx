@@ -40,7 +40,6 @@ import {
 } from "@/components/ui/file-upload";
 import type { UserType } from "@/types/user";
 import Link from "next/link";
-import { SheetClose, SheetFooter } from "../ui/sheet";
 // import { Documents } from "@/models/Documents.model";
 // import { useRouter } from "next/router";
 
@@ -58,9 +57,9 @@ export default function UploaderForm({
 	userId,
 }: { subjects: SubjectInput; userId: string }) {
 	const [files, setFiles] = useState<File[] | null>(null);
-	const [fileIds, setFileIds] = useState<string[]>([]);
+  const [fileIds, setFileIds] = useState<string[]>([]);
 	const [uploadedURLs, setUploadedURLs] = useState<string[]>([]);
-	// const router = useRouter()
+  // const router = useRouter()
 
 	const dropZoneConfig = {
 		maxFiles: 5,
@@ -75,7 +74,7 @@ export default function UploaderForm({
 	});
 
 	async function onSubmit(values: z.infer<typeof formSchema>) {
-		const signURL = async (fileName: string, id: string) =>
+		const signURL = async (fileName: string, id:string) =>
 			fetch(`/sign?filename=${id}-${fileName}`).then((r) => r.text());
 		const uploadFile = async (signedURL: string, file: File, id: string) =>
 			fetch(signedURL, {
@@ -85,9 +84,7 @@ export default function UploaderForm({
 				//   "Content-Type": "application/octet-stream",
 				// },
 			})
-				.then(
-					() => `${process.env.NEXT_PUBLIC_R2_PUBLIC_URL}/${id}-${file.name}`,
-				)
+				.then(() => `${process.env.NEXT_PUBLIC_R2_PUBLIC_URL}/${id}-${file.name}`)
 				.catch(console.error);
 
 		try {
@@ -105,13 +102,9 @@ export default function UploaderForm({
 			);
 			if (!files) return;
 
-			const uploadFiles = Promise.all(
-				files?.map((i, n) => signURL(i.name, fileIds[n])) ?? [],
-			)
+			const uploadFiles = Promise.all(files?.map((i, n) => signURL(i.name, fileIds[n])) ?? [])
 				.then((fileURLS) =>
-					Promise.all(
-						fileURLS.map((i, n) => uploadFile(i, files[n], fileIds[n])),
-					),
+					Promise.all(fileURLS.map((i, n) => uploadFile(i, files[n], fileIds[n]))),
 				)
 				.then((urls) => {
 					fetch("/add-uploads", {
@@ -122,11 +115,11 @@ export default function UploaderForm({
 						body: JSON.stringify(
 							urls.map((i, n) => ({
 								name: files[n].name,
-								fileID: fileIds[n],
+                fileID: fileIds[n],
 								url: i,
 								type: files[n].type,
 								description: values.description,
-								course: values.course,
+                course: values.course,
 								date: values.date,
 								userId,
 							})),
@@ -140,7 +133,7 @@ export default function UploaderForm({
 				loading: `uploading ${files?.length} files...`,
 				success: async (urls: string[]) => {
 					setUploadedURLs(urls);
-					// router.reload()
+          // router.reload()
 					return `${urls.length} Files Uploaded`;
 				},
 				error: "Error",
@@ -256,10 +249,10 @@ export default function UploaderForm({
 								<FileUploader
 									value={files}
 									onValueChange={(files) => {
-										if (!files) return;
-										setFiles(files);
-										setFileIds(files?.map(() => crypto.randomUUID()));
-									}}
+                    if (!files) return
+                    setFiles(files)
+                    setFileIds(files?.map(()=>crypto.randomUUID()))
+                  }}
 									dropzoneOptions={dropZoneConfig}
 									className="relative bg-background rounded-lg p-2"
 								>
@@ -297,11 +290,7 @@ export default function UploaderForm({
 						</FormItem>
 					)}
 				/>
-				<SheetFooter>
-					<SheetClose asChild>
-						<Button type="submit">Upload</Button>
-					</SheetClose>
-				</SheetFooter>
+				<Button type="submit">Submit</Button>
 			</form>
 
 			{/* {uploadedURLs.length > 0 &&

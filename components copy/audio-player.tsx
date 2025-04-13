@@ -10,6 +10,7 @@ import {
 	X,
 	MoreHorizontal,
 } from "lucide-react";
+import { Avatar, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
@@ -27,8 +28,8 @@ const playerData = {
 		name: "295",
 		author: "Sidhu Moosewala",
 		cover: "https://i.scdn.co/image/ab67616d0000b2731d1cc2e40d533d7bcebf5dae",
-		audio: "",
-		// "/audio?text=I love building and shipping new features for our users!",
+		audio:''
+			// "/audio?text=I love building and shipping new features for our users!",
 	},
 };
 
@@ -49,10 +50,10 @@ export function AudioPlayer({ doc }: { doc: Document }) {
 
 	// Improved typing effect
 	useEffect(() => {
-		fetch("/doc-tts", {
-			method: "POST",
+		fetch('/doc-tts', {
+			method: 'POST',
 			headers: {
-				"Content-Type": "application/json",
+				'Content-Type': 'application/json',
 			},
 			body: JSON.stringify(doc),
 		})
@@ -136,74 +137,85 @@ export function AudioPlayer({ doc }: { doc: Document }) {
 
 	return (
 		<div className="flex flex-col items-start gap-8 w-full max-w-[680px]">
-			<motion.div
-				className="flex-1 w-full"
-				transition={{ duration: 0.3, ease: "easeInOut" }}
-			>
-				<div className="flex items-center gap-4">
-					<div className="w-12 h-12 bg-neutral-50 rounded-[4px] border border-solid border-[#00000014] overflow-hidden">
-						{currentSong === playerData.sidhuSong && (
-							<img
-								src={currentSong?.cover || "/placeholder.svg"}
-								alt={currentSong.name}
-								className="w-full h-full object-cover"
-							/>
-						)}
-					</div>
-					<div className="space-y-0.5">
-						<div className="font-medium text-sm text-neutral-900">
-							{currentSong.name}
-						</div>
-						<div className="font-medium text-sm text-[#666666]">
-							{currentSong.author}
-						</div>
-					</div>
-				</div>
-				<div className="mt-6 flex w-full items-center justify-between">
-					<div>{secs2Time(audioRef.current?.currentTime, "00:00")}</div>
-					<div>{secs2Time(audioRef.current?.duration, "--:--")}</div>
-				</div>
-				<div
-					className=" relative h-1.5 hover:cursor-pointer bg-neutral-200 rounded-full overflow-hidden"
-					onClick={handleSeek}
-					onKeyUp={() => false}
-					title="seek"
-				>
-					<Progress
-						value={progress}
-						// style={{ width: `${progress}%` }}
-						className="absolute top-0 left-0 h-full accent-teal-500 rounded-full"
-					/>
-				</div>
+			<Card className="w-[calc(100%-80px)] overflow-hidden mx-auto">
+				<CardHeader className="flex flex-row items-center justify-between py-1 px-3 bg-neutral-50">
+					<div className="font-medium text-sm">Music Player </div>
+					<Button variant="ghost" size="icon" className="h-6 w-6">
+						<X className="h-4 w-4" />
+					</Button>
+				</CardHeader>
 
-				<div className="flex justify-center gap-6 mt-6">
-					<Button variant="ghost" size="icon" className="h-8 w-8">
-						<SkipBack className="h-4 w-4" />
-					</Button>
-					<Button
-						variant="ghost"
-						size="icon"
-						className="h-8 w-8"
-						onClick={togglePlayPause}
+				<CardContent className="flex px-4 pt-4 pb-2">
+					<motion.div
+						className="flex-1 w-full"
+						transition={{ duration: 0.3, ease: "easeInOut" }}
 					>
-						{isPlaying ? (
-							<Pause className="h-4 w-4" />
-						) : (
-							<Play className="h-4 w-4" />
-						)}
-					</Button>
-					<Button variant="ghost" size="icon" className="h-8 w-8">
-						<SkipForward className="h-4 w-4" />
-					</Button>
-				</div>
-			</motion.div>
+						<div className="flex items-center gap-4">
+							<div className="w-12 h-12 bg-neutral-50 rounded-[4px] border border-solid border-[#00000014] overflow-hidden">
+								{currentSong === playerData.sidhuSong && (
+									<img
+										src={currentSong?.cover || "/placeholder.svg"}
+										alt={currentSong.name}
+										className="w-full h-full object-cover"
+									/>
+								)}
+							</div>
+							<div className="space-y-0.5">
+								<div className="font-medium text-sm text-neutral-900">
+									{currentSong.name}
+								</div>
+								<div className="font-medium text-sm text-[#666666]">
+									{currentSong.author}
+								</div>
+							</div>
+						</div>
+						<div className="mt-6 flex w-full items-center justify-between">
+							<div>{secs2Time(audioRef.current?.currentTime, "00:00")}</div>
+							<div>{secs2Time(audioRef.current?.duration, "--:--")}</div>
+						</div>
+						<div
+							className=" relative h-1.5 hover:cursor-pointer bg-neutral-200 rounded-full overflow-hidden"
+							onClick={handleSeek}
+							onKeyUp={() => false}
+							title="seek"
+						>
+							<Progress
+								value={progress}
+								style={{ width: `${progress}%` }}
+								className="absolute top-0 left-0 h-full bg-teal-500 rounded-full"
+							/>
+						</div>
+
+						<div className="flex justify-center gap-6 mt-6">
+							<Button variant="ghost" size="icon" className="h-8 w-8">
+								<SkipBack className="h-4 w-4" />
+							</Button>
+							<Button
+								variant="ghost"
+								size="icon"
+								className="h-8 w-8"
+								onClick={togglePlayPause}
+							>
+								{isPlaying ? (
+									<Pause className="h-4 w-4" />
+								) : (
+									<Play className="h-4 w-4" />
+								)}
+							</Button>
+							<Button variant="ghost" size="icon" className="h-8 w-8">
+								<SkipForward className="h-4 w-4" />
+							</Button>
+						</div>
+					</motion.div>
+				</CardContent>
+			</Card>
 
 			<audio
 				ref={audioRef}
 				onTimeUpdate={handleTimeUpdate}
 				onEnded={() => setIsPlaying(false)}
 				crossOrigin="anonymous"
-				src={currentSong.audio}
+        src={currentSong.audio}
 			>
 				<track kind="captions" />
 			</audio>

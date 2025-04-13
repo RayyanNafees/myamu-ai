@@ -33,11 +33,11 @@ export function UploadSheet({
 				<div className="grid gap-4 py-4 overflow-y-scroll overflow-x-hidden">
 					{children}
 				</div>
-				<SheetFooter>
+				{/* <SheetFooter>
 					<SheetClose asChild>
 						<Button type="submit">Upload</Button>
 					</SheetClose>
-				</SheetFooter>
+				</SheetFooter> */}
 			</SheetContent>
 		</Sheet>
 	);
