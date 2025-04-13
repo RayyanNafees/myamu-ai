@@ -40,7 +40,8 @@ import {
 } from "@/components/ui/file-upload";
 import type { UserType } from "@/types/user";
 import Link from "next/link";
-import { Documents } from "@/models/Documents.model";
+// import { Documents } from "@/models/Documents.model";
+// import { useRouter } from "next/router";
 
 const formSchema = z.object({
 	date: z.coerce.date(),
@@ -51,13 +52,14 @@ const formSchema = z.object({
 
 type SubjectInput = Array<Pick<UserType["subjects"][0], "code" | "subject">>;
 
-export default function MyForm({
+export default function UploaderForm({
 	subjects,
 	userId,
 }: { subjects: SubjectInput; userId: string }) {
 	const [files, setFiles] = useState<File[] | null>(null);
   const [fileIds, setFileIds] = useState<string[]>([]);
 	const [uploadedURLs, setUploadedURLs] = useState<string[]>([]);
+  // const router = useRouter()
 
 	const dropZoneConfig = {
 		maxFiles: 5,
@@ -116,7 +118,8 @@ export default function MyForm({
                 fileID: fileIds[n],
 								url: i,
 								type: files[n].type,
-								description: values.date,
+								description: values.description,
+                course: values.course,
 								date: values.date,
 								userId,
 							})),
@@ -130,6 +133,7 @@ export default function MyForm({
 				loading: `uploading ${files?.length} files...`,
 				success: async (urls: string[]) => {
 					setUploadedURLs(urls);
+          // router.reload()
 					return `${urls.length} Files Uploaded`;
 				},
 				error: "Error",
@@ -222,7 +226,7 @@ export default function MyForm({
 							<FormLabel>Description</FormLabel>
 							<FormControl>
 								<Textarea
-									placeholder="Other details: eg, Talib sir's notes, Excercise 2-3, Topic: Eyelipse"
+									placeholder="eg, Topics, Questions etc"
 									className="resize-none"
 									{...field}
 								/>
@@ -289,12 +293,12 @@ export default function MyForm({
 				<Button type="submit">Submit</Button>
 			</form>
 
-			{uploadedURLs.length > 0 &&
+			{/* {uploadedURLs.length > 0 &&
 				uploadedURLs.map((i) => (
 					<Link key={i} href={i} target="_blank">
 						{i}
 					</Link>
-				))}
+				))} */}
 			<Toaster richColors />
 		</Form>
 	);

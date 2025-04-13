@@ -1,3 +1,4 @@
+import { Documents } from "@/models/Documents.model";
 import { AwsClient } from "aws4fetch";
 
 export const presignURL = async (fileName: string) => {
@@ -33,4 +34,10 @@ export const presignURL = async (fileName: string) => {
 	);
 
 	return signed;
+};
+
+
+export const getAllUploadedDocuments = async (userId: string) => {
+	const docs = await Documents.find({ userId });
+	return docs;
 };

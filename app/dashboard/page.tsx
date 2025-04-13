@@ -14,8 +14,11 @@ import {
   SidebarTrigger,
 } from "@/components/ui/sidebar"
 import Link from "next/link"
+import type { PropsWithChildren } from "react"
+export default async function Page(props: PropsWithChildren<{params: Record<string, string>}>) {
+  console.log({props})
 
-export default function Page() {
+  console.log('keys: ', Object.keys( props.params))
   return (
 
     <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
