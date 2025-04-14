@@ -9,7 +9,6 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Meteors } from "@/components/magicui/meteors";
 // import { loginUserAction } from "@/actions/login";
 
 export function OnboardingForm({
