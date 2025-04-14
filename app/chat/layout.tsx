@@ -6,7 +6,7 @@ import {
 	SidebarProvider,
 	SidebarTrigger,
 } from "@/components/ui/sidebar";
-import type { NextRequest } from "next/server";
+// import type { NextRequest } from "next/server";
 import type { PropsWithChildren } from "react";
 import { cookies } from "next/headers";
 import { User } from "@/models/User.model";
@@ -15,7 +15,7 @@ import { ThemeToggle } from "@/components/ui/theme";
 import Breadcrumbs from "@/components/breadcrumbs";
 
 export default async function Layout(
-	props: PropsWithChildren<{ url: string }>,
+	{children}: PropsWithChildren
 ) {
 	const cookieStore = await cookies();
 	const enroll = cookieStore.get("enroll")?.value;
@@ -38,15 +38,11 @@ export default async function Layout(
 							orientation="vertical"
 							className="mr-2 data-[orientation=vertical]:h-4"
 						/>
-						{/* </div> */}
-						{/* <div className="w-full flex items-center justify-between"> */}
-						{/* </div> */}
-
 						<Breadcrumbs />
 					</div>
 					<ThemeToggle className="mr-5" />
 				</header>
-				{props.children}
+				{children}
 			</SidebarInset>
 		</SidebarProvider>
 	);

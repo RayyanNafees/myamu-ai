@@ -6,7 +6,6 @@ import {
 	SidebarProvider,
 	SidebarTrigger,
 } from "@/components/ui/sidebar";
-import type { NextRequest } from "next/server";
 import type { PropsWithChildren } from "react";
 import { cookies } from "next/headers";
 import { User } from "@/models/User.model";
@@ -15,7 +14,7 @@ import { ThemeToggle } from "@/components/ui/theme";
 import Breadcrumbs from "@/components/breadcrumbs";
 
 export default async function Layout(
-	props: PropsWithChildren<{ url: string }>,
+	props: PropsWithChildren
 ) {
 	const cookieStore = await cookies();
 	const enroll = cookieStore.get("enroll")?.value;
