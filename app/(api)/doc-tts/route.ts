@@ -1,6 +1,6 @@
+import { fetchTextFromPDF, fetchUserFromEnroll } from "@/lib/pdf";
 import { tts } from "@/lib/tts";
 import { Documents } from "@/models/Documents.model";
-import PdfParse from "pdf-parse";
 import { Buffer } from "node:buffer";
 
 export const POST = async (req: Request) => {
@@ -10,7 +10,7 @@ export const POST = async (req: Request) => {
 	const docItem = await Documents.findById(doc.id);
 	const docFile = await fetch(docItem.url).then((r) => r.arrayBuffer());
 	const docBuffer = Buffer.from(docFile);
-	const text = await PdfParse(docBuffer).then((r) => r.text.slice(0, 200));
+	const text = await fetchTextFromPDF(docFile).then((r) => r.slice(0, 200));
 
 	const blob = await tts(text.slice(0,20));
 	const arrayBuffer = await blob.arrayBuffer();

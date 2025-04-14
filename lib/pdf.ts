@@ -42,7 +42,16 @@ export const parseRegistrationCard = (dataArr: string[], enroll?: string) => {
 	};
 };
 
-export const fetchUserFromEnroll = async (enroll:string)=>fetch(`https://scheme.deno.dev/api/student/${enroll}`).then(r=>r.json())
+export const fetchUserFromEnroll = async (enroll: string) =>
+	fetch(`https://scheme.deno.dev/api/student/${enroll}`).then((r) => r.json());
+export const fetchTextFromPDF = async (file: ArrayBuffer) =>
+	await fetch("https://scheme.deno.dev/api/file", {
+		method: "POST",
+		body: file,
+		headers: {
+			"Content-Type": 'application/pdf',
+		},
+	}).then((r) => r.text());
 
 // export const getUserFromEnroll = async (enroll: string) => {
 // 	if (!/[A-z]{2}\d{4}/.test(enroll))
