@@ -1,4 +1,4 @@
-import pdfParse from "pdf-parse";
+// import pdfParse from "pdf-parse";
 import { Buffer } from "node:buffer";
 export const parseRegistrationCard = (dataArr: string[], enroll?: string) => {
 	const subs = dataArr
@@ -44,28 +44,28 @@ export const parseRegistrationCard = (dataArr: string[], enroll?: string) => {
 
 export const fetchUserFromEnroll = async (enroll:string)=>fetch(`https://scheme.deno.dev/api/student/${enroll}`).then(r=>r.json())
 
-export const getUserFromEnroll = async (enroll: string) => {
-	if (!/[A-z]{2}\d{4}/.test(enroll))
-		throw new Error("Invalid enrollment number");
-	const sem = new Date().getMonth() > 6 ? "odd" : "even";
-	const file = await fetch(
-		`https://ctengg.amu.ac.in/web/reg_record_${sem}.php`,
-		{
-			method: "POST",
-			headers: {
-				"Content-Type": "application/x-www-form-urlencoded",
-			},
-			body: new URLSearchParams({
-				fac: enroll,
-				submit: "Download",
-			}),
-		},
-	).then((r) => r.arrayBuffer());
-	console.log({file})
-	const file2 = Buffer.from(file);
-	const data = await pdfParse(file2);
-	const dataArr = data.text.split("\n");
-	console.log(dataArr);
+// export const getUserFromEnroll = async (enroll: string) => {
+// 	if (!/[A-z]{2}\d{4}/.test(enroll))
+// 		throw new Error("Invalid enrollment number");
+// 	const sem = new Date().getMonth() > 6 ? "odd" : "even";
+// 	const file = await fetch(
+// 		`https://ctengg.amu.ac.in/web/reg_record_${sem}.php`,
+// 		{
+// 			method: "POST",
+// 			headers: {
+// 				"Content-Type": "application/x-www-form-urlencoded",
+// 			},
+// 			body: new URLSearchParams({
+// 				fac: enroll,
+// 				submit: "Download",
+// 			}),
+// 		},
+// 	).then((r) => r.arrayBuffer());
+// 	console.log({file})
+// 	const file2 = Buffer.from(file);
+// 	const data = await pdfParse(file2);
+// 	const dataArr = data.text.split("\n");
+// 	console.log(dataArr);
 
-	return parseRegistrationCard(dataArr);
-};
+// 	return parseRegistrationCard(dataArr);
+// };
