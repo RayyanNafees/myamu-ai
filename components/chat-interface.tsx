@@ -1,7 +1,7 @@
 "use client";
 
 import "ios-vibrator-pro-max";
-import nmd from 'nano-markdown'
+// import nmd from 'nano-markdown'
 
 import type React from "react";
 import { useState, useRef, useEffect } from "react";
@@ -23,7 +23,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
 import { Input } from "./ui/input";
 import { Label } from "./ui/label";
-import { v4 as uuidv4 } from 'uuid';
+import { v4 as uuidv4 } from "uuid";
 
 type ActiveButton = "none" | "add" | "deepSearch" | "think";
 type MessageType = "user" | "system";
@@ -327,10 +327,10 @@ export default function ChatInterface() {
 
 		try {
 			// Call the API endpoint
-			const response = await fetch('/aichat', {
-				method: 'POST',
+			const response = await fetch("/aichat", {
+				method: "POST",
 				headers: {
-					'Content-Type': 'application/json',
+					"Content-Type": "application/json",
 				},
 				body: JSON.stringify({
 					message: userMessage,
@@ -339,18 +339,18 @@ export default function ChatInterface() {
 			});
 
 			if (!response.ok) {
-				throw new Error('Failed to get response from AI');
+				throw new Error("Failed to get response from AI");
 			}
 
 			const data = await response.json();
-			
+
 			// Update session ID if it changed
 			if (data.sessionId && data.sessionId !== sessionId) {
 				setSessionId(data.sessionId);
 			}
 
 			// Stream the text
-			await simulateTextStreaming(nmd(data.response));
+			await simulateTextStreaming(data.response);
 
 			// Update with complete message
 			setMessages((prev) =>
@@ -372,17 +372,21 @@ export default function ChatInterface() {
 			setStreamingMessageId(null);
 			setIsStreaming(false);
 		} catch (error) {
-			console.error('Error getting AI response:', error);
-			
+			console.error("Error getting AI response:", error);
+
 			// Update with error message
 			setMessages((prev) =>
 				prev.map((msg) =>
 					msg.id === messageId
-						? { ...msg, content: "Sorry, I encountered an error. Please try again.", completed: true }
+						? {
+								...msg,
+								content: "Sorry, I encountered an error. Please try again.",
+								completed: true,
+							}
 						: msg,
 				),
 			);
-			
+
 			// Reset streaming state
 			setStreamingWords([]);
 			setStreamingMessageId(null);
@@ -682,27 +686,28 @@ export default function ChatInterface() {
 							<div className="flex items-center justify-between">
 								<div className="flex items-center space-x-2">
 									<Input type="file" name="file" id="file" hidden />
-									
-										<Button
-											type="button"
-											variant="outline"
-											size="icon"
-											className={cn(
-												"rounded-full h-8 w-8 flex-shrink-0 border-gray-200 p-0 transition-colors",
-												activeButton === "add" && "bg-gray-100 border-gray-300",
-											)}
-											onClick={() => toggleButton("add")}
-											disabled={isStreaming}
-										><Label htmlFor="file" >
+
+									<Button
+										type="button"
+										variant="outline"
+										size="icon"
+										className={cn(
+											"rounded-full h-8 w-8 flex-shrink-0 border-gray-200 p-0 transition-colors",
+											activeButton === "add" && "bg-gray-100 border-gray-300",
+										)}
+										onClick={() => toggleButton("add")}
+										disabled={isStreaming}
+									>
+										<Label htmlFor="file">
 											<Plus
 												className={cn(
 													"h-4 w-4 text-gray-500",
 													activeButton === "add" && "text-gray-700",
 												)}
 											/>
-									</Label>
-											<span className="sr-only">Add</span>
-										</Button>
+										</Label>
+										<span className="sr-only">Add</span>
+									</Button>
 
 									<Button
 										type="button"
