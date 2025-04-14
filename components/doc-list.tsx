@@ -39,6 +39,7 @@ import {
 } from "@/components/ui/tooltip";
 import { AudioPlayer } from "./audio-player";
 import type { Document } from "@/types/user";
+import ChatInterface from "./chat-interface";
 
 export const DropDown = ({ doc }: { doc: string }) => (
 	<DropdownMenu>
@@ -51,11 +52,11 @@ export const DropDown = ({ doc }: { doc: string }) => (
 		<DropdownMenuContent align="end">
 			<DropdownMenuLabel>Actions</DropdownMenuLabel>
 			<DropdownMenuItem onClick={() => navigator.clipboard.writeText("wow")}>
-				Copy payment ID
+				share
 			</DropdownMenuItem>
 			<DropdownMenuSeparator />
-			<DropdownMenuItem>View customer</DropdownMenuItem>
-			<DropdownMenuItem>View payment details</DropdownMenuItem>
+			<DropdownMenuItem>Delete</DropdownMenuItem>
+			<DropdownMenuItem>Report</DropdownMenuItem>
 		</DropdownMenuContent>
 	</DropdownMenu>
 );
@@ -76,6 +77,48 @@ const TTSButton = ({ doc }: { doc: Document }) => (
 			</TooltipTrigger>
 			<TooltipContent>
 				<p>Listen</p>
+			</TooltipContent>
+		</Tooltip>
+	</TooltipProvider>
+);
+
+const AIChat = () => (
+	<TooltipProvider>
+		<Tooltip>
+			<TooltipTrigger asChild>
+				<Popup
+					title="Quiz"
+					description="Quiz based on the document text"
+					dialogComponent={<ChatInterface />}
+				>
+					<Button variant="outline" size="icon">
+						<MessageSquare />
+					</Button>
+				</Popup>
+			</TooltipTrigger>
+			<TooltipContent>
+				<p>AI Chat</p>
+			</TooltipContent>
+		</Tooltip>
+	</TooltipProvider>
+);
+
+const DocQuiz = () => (
+	<TooltipProvider>
+		<Tooltip>
+			<TooltipTrigger asChild>
+				<Popup
+					title="AI Chat"
+					description="Chat with this document"
+					dialogComponent={<ChatInterface />}
+				>
+					<Button variant="outline" size="icon">
+						<MessageCircleQuestion />
+					</Button>
+				</Popup>
+			</TooltipTrigger>
+			<TooltipContent>
+				<p>Quiz</p>
 			</TooltipContent>
 		</Tooltip>
 	</TooltipProvider>
@@ -168,12 +211,8 @@ export function DocsList({
 
 								<div className="grid grid-cols-3 gap-1 col-span-3">
 									<TTSButton doc={doc} />
-									<ActionButton name="AI Chat">
-										<MessageSquare />
-									</ActionButton>
-									<ActionButton name="Quiz">
-										<MessageCircleQuestion />
-									</ActionButton>
+									<AIChat />
+									<DocQuiz />
 								</div>
 								<div className="col-span-1">
 									{/* <Button variant="outline" size="icon"> */}

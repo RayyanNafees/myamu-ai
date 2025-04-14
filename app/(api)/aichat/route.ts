@@ -19,7 +19,7 @@ export async function POST(req: NextRequest) {
     // Start a chat and send message
     const chat = model.startChat();
     const result = await chat.sendMessage(message);
-    const response = await result.response;
+    const response =  result.response;
     const responseText = response.text();
     
     // Return the response
